@@ -1,0 +1,54 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper Functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isAdmin() {
+      return isAuthenticated() && (
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+        (request.auth.token.email == "eomtaemi35@gmail.com" && request.auth.token.email_verified == true)
+      );
+    }
+
+    // Site Config: Publicly readable, admin writable
+    match /config/site {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Portfolio: Publicly readable, admin writable
+    match /portfolio/{itemId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Posts: Publicly readable, admin writable
+    match /posts/{postId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Contacts: Publicly writable (for inquiries), admin readable
+    function isValidContact(data) {
+      return data.keys().hasAll(['name', 'contact', 'serviceType', 'message', 'createdAt']) &&
+             data.name is string && data.name.size() >= 2 && data.name.size() <= 100 &&
+             data.contact is string && data.contact.size() >= 10 && data.contact.size() <= 50 &&
+             data.serviceType is string &&
+             data.message is string && data.message.size() >= 10 && data.message.size() <= 2000;
+    }
+
+    match /contacts/{contactId} {
+      allow create: if isValidContact(request.resource.data);
+      allow read, update, delete: if isAdmin();
+    }
+
+    // Users: Private data, admin can manage roles
+    match /users/{userId} {
+      allow read: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
+      allow write: if isAdmin();
+    }
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "entities": {
+    "SiteConfig": {
+      "title": "Site Configuration",
+      "description": "Global settings for the website (slogans, contact info, branding).",
+      "type": "object",
+      "properties": {
+        "heroSlogan": { "type": "string" },
+        "heroSubtext": { "type": "string" },
+        "companyAddress": { "type": "string" },
+        "companyPhone": { "type": "string" },
+        "companyEmail": { "type": "string" },
+        "businessRegistrationNumber": { "type": "string" },
+        "socialLinks": {
+          "type": "object",
+          "properties": {
+            "instagram": { "type": "string" },
+            "blog": { "type": "string" },
+            "youtube": { "type": "string" }
+          }
+        }
+      },
+      "required": ["heroSlogan", "companyPhone"]
+    },
+    "PortfolioItem": {
+      "title": "Portfolio Item",
+      "description": "A showcase item for Construction projects.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "category": { "type": "string", "enum": ["CCTV", "NETWORK", "ACCESS_CONTROL"] },
+        "description": { "type": "string" },
+        "imageUrl": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "category", "imageUrl"]
+    },
+    "Post": {
+      "title": "Post",
+      "description": "News, updates, or security tips.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "content": { "type": "string" },
+        "category": { "type": "string" },
+        "imageUrl": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "content"]
+    },
+    "ContactRequest": {
+      "title": "Contact Request",
+      "description": "A quote request from a potential client.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "contact": { "type": "string" },
+        "serviceType": { "type": "string" },
+        "message": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "contact", "serviceType"]
+    }
+  },
+  "firestore": {
+    "config/site": { "schema": "SiteConfig", "description": "Global site configuration." },
+    "portfolio": { "schema": "PortfolioItem", "description": "Portfolio items for CCTV and Logo Design." },
+    "posts": { "schema": "Post", "description": "News and blog posts." },
+    "contacts": { "schema": "ContactRequest", "description": "User inquiries and quote requests." }
+  }
+}
